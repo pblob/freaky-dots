@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+	<head lang="en=AU">
+		<title>Freaky Dot Patterns</title>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<meta name="author" content="Patrick Toohey">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+	</head>
+	<style>
+		div {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		canvas {
+			position: absolute;
+			top: 0px;
+		}
+	</style>
+	<body>
+		<script src="freakydots.js"></script>
+		<script src="tween.js"></script>
+		<script>
+			
+			const w = 1000;
+			const h = 20;
+
+			const rotate = (field, colour, coords) => {
+				field.paint(colour, h);
+				let x = (w + coords.x) * 0.5;
+				let y = (w + coords.y) * 0.5;
+				field.ctx.translate(x, y);
+				field.ctx.rotate(coords.r);
+				field.ctx.translate(-x, -y);
+			}
+
+			const animate = (t) => {
+				topDotsField.clear();
+				requestAnimationFrame(animate);
+				TWEEN.update(t);
+			}
+
+			const coords = {x:0, y: 0, r: 0}
+			const tween = new TWEEN.Tween(coords)
+				.to({x: 40, y: 40, r: Math.PI / 150}, 15000)
+				//.easing(TWEEN.Easing.Sinusoidal.InOut)
+				.onUpdate(() => {
+					rotate(topDotsField, 'rgb(0, 0, 0)', coords);
+				})
+				.repeat(Infinity)
+				.yoyo(false)
+				.start();
+
+			let topDotsField = new DotField(new Rect(0, 0, w, w));
+			let bottomDotsField = new DotField(new Rect(0, 0, w, w));
+
+			let holder = document.body.appendChild(document.createElement('div'));
+
+			holder.append(topDotsField.canvas);
+			holder.append(bottomDotsField.canvas);
+
+			topDotsField.canvas.style.clipPath = 
+			bottomDotsField.canvas.style.clipPath = 'circle(' + w/3 + 'px at center)';
+
+			bottomDotsField.paint('rgb(0, 0, 0)', h);
+			requestAnimationFrame(animate);
+
+		</script>
+	</body>
+</html>
