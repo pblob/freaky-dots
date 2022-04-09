@@ -35,6 +35,10 @@ class DotField {
 		}
 	}
 
+	clone() {
+		return new DotField(this.rect);
+	}
+
 }
 
 class Rect {
