@@ -2,15 +2,8 @@ class DotField {
 
 	constructor(rect) {
 		this.rect = rect;
-		this.canvas = this.makeCanvas();
-	}
-
-	makeCanvas() {
-		let c = document.createElement('canvas');
-		c.width = this.rect.width;
-		c.height = this.rect.height;
-		this.ctx = c.getContext('2d');
-		return c;
+		this.canvas = Utils.makeCanvas(rect);
+		this.ctx = this.canvas.getContext('2d');
 	}
 
 	clear() {
@@ -21,6 +14,11 @@ class DotField {
 	}
 
 	paint(colour, width, height) {
+
+		//this.ctx.beginPath();
+		//this.ctx.arc(this.rect.width * 0.5, this.rect.height * 0.5, this.rect.width * 0.5, 0, 2 * Math.PI);
+		//this.ctx.clip();
+
 		let a = 0, b = 0, h = height || width;
 		while (a < this.rect.width) {
 			let tri = new Triangle(this.ctx, new Rect(a,0,width,h), colour);
@@ -68,6 +66,38 @@ class Triangle {
 		this.ctx.lineTo(this.rect.x + this.rect.width * 0.5, this.rect.y);
 		this.ctx.fill ();
 		this.ctx.closePath ();
+	}
+
+}
+
+class CircleMask {
+
+	constructor(ctx, rect, colour) {
+		this.ctx = ctx;
+		this.rect = rect;
+		this.ctx.fillStyle = colour || 'rgb(255, 255, 255)';
+	}
+
+	draw(offset) {
+		this.ctx.beginPath();
+		this.ctx.arc(
+			this.rect.x + this.rect.width * 0.5, 
+			this.rect.y + this.rect.height * 0.5, 
+			(this.rect.width - offset) * 0.5, 
+			0, Math.PI * 2, true);
+		this.ctx.rect(this.rect.x, this.rect.y, this.rect.width, this.rect.height)
+		this.ctx.fill();
+	}
+
+}
+
+class Utils {
+
+	static makeCanvas(rect) {
+		let c = document.createElement('canvas');
+		c.width = rect.width;
+		c.height = rect.height;
+		return c;
 	}
 
 }

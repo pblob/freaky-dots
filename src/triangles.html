@@ -7,10 +7,21 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 	</head>
 	<style>
-		div {
+		body {
+			width: 100vw;
+			height: 100vh;
+			margin: 0;
+		}
+		#holder {
 			display: flex;
 			justify-content: center;
 			align-items: center;
+			width: 100vw;
+      		height: 100vh;
+		}
+		#inner {
+			position: relative;
+			overflow: hidden;
 		}
 		canvas {
 			position: absolute;
@@ -29,36 +40,37 @@
 			// There are no variables.
 			const 
 			freakFactors = {x: 40, y: 40},
-			yourIrrationalFear = 250,
-			secondsToTranscendance = 2.5,
+			yourIrrationalFear = 1,
+			secondsToTranscendance = 9,
 			scopeOfYourFeeling = 1000,
 			scaleOfYourResponse = 20;
 
 			const 
-			rotate = (field, colour, coords) => {
-				field.paint(colour, scaleOfYourResponse);
-				let x = (scopeOfYourFeeling + coords.x) * 0.5;
-				let y = (scopeOfYourFeeling + coords.y) * 0.5;
-				field.ctx.translate(x, y);
-				field.ctx.rotate(coords.r);
-				field.ctx.translate(-x, -y);
+			rotate = (field, colour, coords, reverse) => {
+				let rev = reverse ? '-' : '';
+				field.canvas.style.transform = 'translate(' + rev + coords.x + 'px,' + rev + coords.y + 'px) rotate(' + rev + coords.r + 'rad)';
 			},
 			animate = (t) => {
-				topDotsField.clear();
-				requestAnimationFrame(animate);
 				TWEEN.update(t);
-			}
+				requestAnimationFrame(animate);
+			};
 
-			const 
-			coords = {x:0, y: 0, r: 0},
-			tween = new TWEEN.Tween(coords)
-				.to({x: freakFactors.x, y: freakFactors.y, r: Math.PI / yourIrrationalFear}, secondsToTranscendance * 1000)
-				//.easing(TWEEN.Easing.Sinusoidal.InOut)
+			const coords = {x:0, y: 0, r: 0};
+
+			new TWEEN.Tween(coords)
+				.to({x: freakFactors.x, y: freakFactors.y}, secondsToTranscendance * 1000)
+				.easing(TWEEN.Easing.Sinusoidal.InOut)
+				.repeat(Infinity)
+				.yoyo(true)
+				.start();
+			
+			new TWEEN.Tween(coords)
+				.to({r: Math.PI * yourIrrationalFear}, secondsToTranscendance * 1100)
 				.onUpdate(() => {
-					rotate(topDotsField, 'rgb(0, 0, 0)', coords);
+					rotate(bottomDotsField, 'rgb(0, 0, 0)', coords);
+					//rotate(topDotsField, 'rgb(0, 0, 0)', coords, true);
 				})
 				.repeat(Infinity)
-				.yoyo(false)
 				.start();
 
 			let 
@@ -66,14 +78,21 @@
 			bottomDotsField = topDotsField.clone();
 
 			let holder = document.body.appendChild(document.createElement('div'));
+			holder.id = 'holder';
 
-			holder.append(topDotsField.canvas);
-			holder.append(bottomDotsField.canvas);
+			let inner = holder.appendChild(document.createElement('div'));
+			inner.id = 'inner';
+			inner.style.width = inner.style.height = scopeOfYourFeeling + 'px';
 
-			topDotsField.canvas.style.clipPath = 
-			bottomDotsField.canvas.style.clipPath = 'circle(' + scopeOfYourFeeling/3 + 'px at center)';
+			inner.append(bottomDotsField.canvas);
+			inner.append(topDotsField.canvas);
 
 			bottomDotsField.paint('rgb(0, 0, 0)', scaleOfYourResponse);
+			topDotsField.paint('rgb(0, 0, 0)', scaleOfYourResponse);
+			
+			let mask = new CircleMask(topDotsField.ctx, new Rect(0, 0, scopeOfYourFeeling, scopeOfYourFeeling));
+			mask.draw(100);
+
 			requestAnimationFrame(animate);
 
 		</script>
