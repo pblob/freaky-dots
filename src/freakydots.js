@@ -21,12 +21,13 @@ class DotField {
 
 		let a = 0, b = 0, h = height || width;
 		while (a < this.rect.width) {
-			let tri = new Triangle(this.ctx, new Rect(a,0,width,h), colour);
-			tri.draw();
+			let c = true;
+			let olda = a;
 			while (b < this.rect.height) {
 				let tri = new Triangle(this.ctx, new Rect(a,b,width,h), colour);
-				tri.draw();
-				b += h;
+				a = c ? a + h * 0.5 : olda;
+				b += tri.draw();
+				c = !c;
 			}
 			a += h;
 			b = 0;
@@ -59,13 +60,36 @@ class Triangle {
 	}
 
 	draw() {
+
+		// to make it equilateral
+		//     c
+		//
+		//  a     b
+
+		let ax = this.rect.x;
+		let ay = this.rect.y + this.rect.width;
+
+		let bx = this.rect.x + this.rect.width;
+		let by = ay;
+
+		let dx = bx - ax;
+		let dy = by - ay;
+
+		let angle = Math.atan2(dy, dx) - Math.PI / 3;
+		let length = Math.sqrt(dx * dx + dy * dy);
+
+		let cx = Math.cos(angle) * length + ax;
+		let cy = Math.sin(angle) * length + ay;
+
 		this.ctx.beginPath();
-		this.ctx.moveTo(this.rect.x + this.rect.width * 0.5, this.rect.y);
-		this.ctx.lineTo(this.rect.x + this.rect.width, this.rect.y + this.rect.height);
-		this.ctx.lineTo(this.rect.x, this.rect.y + this.rect.height);
-		this.ctx.lineTo(this.rect.x + this.rect.width * 0.5, this.rect.y);
+		this.ctx.moveTo(ax, ay);
+		this.ctx.lineTo(bx, by);
+		this.ctx.lineTo(cx, cy);
 		this.ctx.fill ();
 		this.ctx.closePath ();
+
+		return ay - cy;
+
 	}
 
 }

@@ -39,9 +39,9 @@
 			// There is no free will. 
 			// There are no variables.
 			const 
-			freakFactors = {x: 40, y: 40},
-			yourIrrationalFear = 1,
-			secondsToTranscendance = 9,
+			freakFactors = {x: 0, y: 0}, // 0 = no offset
+			yourIrrationalFear = 0.66,
+			secondsToTranscendance = 20,
 			scopeOfYourFeeling = 1000,
 			scaleOfYourResponse = 20;
 
@@ -65,10 +65,9 @@
 				.start();
 			
 			new TWEEN.Tween(coords)
-				.to({r: Math.PI * yourIrrationalFear}, secondsToTranscendance * 1100)
+				.to({r: '+' + Math.PI * yourIrrationalFear + ''}, secondsToTranscendance * 1100)
 				.onUpdate(() => {
 					rotate(bottomDotsField, 'rgb(0, 0, 0)', coords);
-					//rotate(topDotsField, 'rgb(0, 0, 0)', coords, true);
 				})
 				.repeat(Infinity)
 				.start();
