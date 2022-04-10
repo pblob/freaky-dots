@@ -17,7 +17,7 @@
 			justify-content: center;
 			align-items: center;
 			width: 100vw;
-      		height: 100vh;
+			height: 100vh;
 		}
 		#inner {
 			position: relative;
@@ -31,6 +31,7 @@
 	<body>
 		<script src="freakydots.js"></script>
 		<script src="tween.js"></script>
+		<script src="petals.js"></script>
 		<script>
 			
 			// What we call chaos is just patterns we haven't recognized. 
@@ -41,7 +42,7 @@
 			const 
 			freakFactors = {x: 0, y: 0}, // 0 = no offset
 			yourIrrationalFear = 0.66,
-			secondsToTranscendance = 20,
+			secondsToTranscendance = 40,
 			scopeOfYourFeeling = 1000,
 			scaleOfYourResponse = 20;
 
@@ -68,12 +69,15 @@
 				.to({r: '+' + Math.PI * yourIrrationalFear + ''}, secondsToTranscendance * 1100)
 				.onUpdate(() => {
 					rotate(bottomDotsField, 'rgb(0, 0, 0)', coords);
+					rotate(petals, 'rgb(0, 0, 0)', coords);
 				})
 				.repeat(Infinity)
 				.start();
+			
+			const rect = new Rect(0, 0, scopeOfYourFeeling, scopeOfYourFeeling);
 
 			let 
-			topDotsField = new DotField(new Rect(0, 0, scopeOfYourFeeling, scopeOfYourFeeling)),
+			topDotsField = new DotField(rect),
 			bottomDotsField = topDotsField.clone();
 
 			let holder = document.body.appendChild(document.createElement('div'));
@@ -89,8 +93,15 @@
 			bottomDotsField.paint('rgb(0, 0, 0)', scaleOfYourResponse);
 			topDotsField.paint('rgb(0, 0, 0)', scaleOfYourResponse);
 			
-			let mask = new CircleMask(topDotsField.ctx, new Rect(0, 0, scopeOfYourFeeling, scopeOfYourFeeling));
+			let mask = new CircleMask(topDotsField.ctx, rect);
 			mask.draw(100);
+
+			let pRect = rect.clone();
+			let petals = new PetalField(pRect);
+			inner.append(petals.canvas);
+
+			petals.rect.shrink(100, 100);
+			petals.draw();
 
 			requestAnimationFrame(animate);
 

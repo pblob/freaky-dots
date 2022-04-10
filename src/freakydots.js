@@ -49,6 +49,24 @@ class Rect {
 		this.height = height;
 	}
 
+	shrink(byW, byH) {
+		this.x += byW * 0.5;
+		this.y += byH * 0.5;
+		this.width -= byW;
+		this.height -= byH;
+	}
+
+	grow(byW, byH) {
+		this.x -= byW * 0.5;
+		this.y -= byH * 0.5;
+		this.width += byW;
+		this.height += byH;
+	}
+
+	clone() {
+		return new Rect(this.x, this.y, this.width, this.height);
+	}
+
 }
 
 class Triangle {
@@ -86,7 +104,7 @@ class Triangle {
 		this.ctx.lineTo(bx, by);
 		this.ctx.lineTo(cx, cy);
 		this.ctx.fill ();
-		this.ctx.closePath ();
+		this.ctx.closePath();
 
 		return ay - cy;
 
@@ -111,6 +129,57 @@ class CircleMask {
 			0, Math.PI * 2, true);
 		this.ctx.rect(this.rect.x, this.rect.y, this.rect.width, this.rect.height)
 		this.ctx.fill();
+	}
+
+}
+
+class Point {
+
+	constructor(x, y) {
+		this.x = x || 0;
+		this.y = y || 0;
+	}
+	
+	translateRadians(angle, distance) {
+		this.x += Math.cos(angle) * distance;
+		this.y += Math.sin(angle) * distance;
+	}
+
+	draw(ctx, colour, radius) {
+		ctx.strokeStyle = colour || 'rgb(255, 0, 0)';
+		radius = radius || 5;
+		ctx.beginPath();
+		ctx.arc(
+			this.x, 
+			this.y, 
+			radius, 0, Math.PI * 2);
+		ctx.stroke();
+		ctx.closePath();
+	}
+
+	drawNormal(fromPt, ctx, colour, length) {
+		ctx.strokeStyle = colour || 'rgb(255, 0, 0)';
+		ctx.beginPath();
+		ctx.moveTo(this.x, this.y);
+		let pt = this.getNormal(fromPt, length);
+		ctx.lineTo(pt.x, pt.y);
+		ctx.stroke();
+		ctx.closePath();
+		return pt;
+	}
+
+	getNormal(fromPt, length) {
+		let pt = this.clone();
+		pt.translateRadians(Point.angle(fromPt, pt), length || 20);
+		return pt;
+	}
+	
+	clone() {
+		return new Point(this.x, this.y);
+	}
+
+	static angle(pt0, pt1) {
+		return Math.atan2(pt1.y - pt0.y, pt1.x - pt0.x);
 	}
 
 }
