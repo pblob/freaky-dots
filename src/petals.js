@@ -1,8 +1,8 @@
 class PetalField {
 
 	constructor(rect) {
-		this.rect = rect;
-		this.canvas = Utils.makeCanvas(rect);
+		this.rect = rect.clone();
+		this.canvas = Utils.makeCanvas(this.rect);
 		this.ctx = this.canvas.getContext('2d');
 	}
 

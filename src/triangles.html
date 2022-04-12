@@ -12,12 +12,15 @@
 			height: 100vh;
 			margin: 0;
 		}
-		#holder {
+		#frame {
 			display: flex;
 			justify-content: center;
 			align-items: center;
 			width: 100vw;
 			height: 100vh;
+		}
+		#matte {
+			
 		}
 		#inner {
 			position: relative;
@@ -76,31 +79,32 @@
 			
 			const rect = new Rect(0, 0, scopeOfYourFeeling, scopeOfYourFeeling);
 
-			let 
+			const
 			topDotsField = new DotField(rect),
 			bottomDotsField = topDotsField.clone();
 
-			let holder = document.body.appendChild(document.createElement('div'));
-			holder.id = 'holder';
-
-			let inner = holder.appendChild(document.createElement('div'));
-			inner.id = 'inner';
+			const 
+			frame = Utils.appendDiv(document.body, 'frame'),
+			matte = Utils.appendDiv(frame, 'matte'),
+			inner = Utils.appendDiv(matte, 'inner');
+			
 			inner.style.width = inner.style.height = scopeOfYourFeeling + 'px';
+
+			const offset = 100;
+			const mask = new CircleMask(topDotsField.ctx, rect);
+			const petals = new PetalField(rect);
+
+			petals.rect.shrink(offset, offset);
 
 			inner.append(bottomDotsField.canvas);
 			inner.append(topDotsField.canvas);
-
-			bottomDotsField.paint('rgb(0, 0, 0)', scaleOfYourResponse);
-			topDotsField.paint('rgb(0, 0, 0)', scaleOfYourResponse);
-			
-			let mask = new CircleMask(topDotsField.ctx, rect);
-			mask.draw(100);
-
-			let pRect = rect.clone();
-			let petals = new PetalField(pRect);
 			inner.append(petals.canvas);
 
-			petals.rect.shrink(100, 100);
+			bottomDotsField.draw('rgb(0, 0, 0)', scaleOfYourResponse);
+			topDotsField.draw('rgb(0, 0, 0)', scaleOfYourResponse);
+			mask.draw(offset);
+
+			
 			petals.draw();
 
 			requestAnimationFrame(animate);

@@ -1,8 +1,8 @@
 class DotField {
 
 	constructor(rect) {
-		this.rect = rect;
-		this.canvas = Utils.makeCanvas(rect);
+		this.rect = rect.clone();
+		this.canvas = Utils.makeCanvas(this.rect);
 		this.ctx = this.canvas.getContext('2d');
 	}
 
@@ -13,7 +13,7 @@ class DotField {
 		this.ctx.restore();
 	}
 
-	paint(colour, width, height) {
+	draw(colour, width, height) {
 
 		//this.ctx.beginPath();
 		//this.ctx.arc(this.rect.width * 0.5, this.rect.height * 0.5, this.rect.width * 0.5, 0, 2 * Math.PI);
@@ -99,12 +99,14 @@ class Triangle {
 		let cx = Math.cos(angle) * length + ax;
 		let cy = Math.sin(angle) * length + ay;
 
+		this.ctx.save();
 		this.ctx.beginPath();
 		this.ctx.moveTo(ax, ay);
 		this.ctx.lineTo(bx, by);
 		this.ctx.lineTo(cx, cy);
 		this.ctx.fill ();
 		this.ctx.closePath();
+		this.ctx.restore();
 
 		return ay - cy;
 
@@ -116,11 +118,13 @@ class CircleMask {
 
 	constructor(ctx, rect, colour) {
 		this.ctx = ctx;
-		this.rect = rect;
-		this.ctx.fillStyle = colour || 'rgb(255, 255, 255)';
+		this.rect = rect.clone();
+		this.colour = colour || 'rgb(255, 255, 255)';
 	}
 
 	draw(offset) {
+		this.ctx.save();
+		this.ctx.fillStyle = this.colour;
 		this.ctx.beginPath();
 		this.ctx.arc(
 			this.rect.x + this.rect.width * 0.5, 
@@ -129,6 +133,7 @@ class CircleMask {
 			0, Math.PI * 2, true);
 		this.ctx.rect(this.rect.x, this.rect.y, this.rect.width, this.rect.height)
 		this.ctx.fill();
+		this.ctx.restore();
 	}
 
 }
@@ -146,6 +151,7 @@ class Point {
 	}
 
 	draw(ctx, colour, radius) {
+		ctx.save();
 		ctx.strokeStyle = colour || 'rgb(255, 0, 0)';
 		radius = radius || 5;
 		ctx.beginPath();
@@ -155,9 +161,11 @@ class Point {
 			radius, 0, Math.PI * 2);
 		ctx.stroke();
 		ctx.closePath();
+		ctx.restore();
 	}
 
 	drawNormal(fromPt, ctx, colour, length) {
+		ctx.save();
 		ctx.strokeStyle = colour || 'rgb(255, 0, 0)';
 		ctx.beginPath();
 		ctx.moveTo(this.x, this.y);
@@ -165,6 +173,7 @@ class Point {
 		ctx.lineTo(pt.x, pt.y);
 		ctx.stroke();
 		ctx.closePath();
+		ctx.restore();
 		return pt;
 	}
 
@@ -191,6 +200,12 @@ class Utils {
 		c.width = rect.width;
 		c.height = rect.height;
 		return c;
+	}
+
+	static appendDiv(to, id) {
+		let d = to.appendChild(document.createElement('div'));
+		d.id = id;
+		return d;
 	}
 
 }
