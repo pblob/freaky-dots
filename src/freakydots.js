@@ -1,16 +1,12 @@
-class DotField {
+
+import { Triangle } from './shapes.js'
+import { Rect } from './geom.js'
+import { Field } from './field.js'
+
+class DotField extends Field {
 
 	constructor(rect) {
-		this.rect = rect.clone();
-		this.canvas = Utils.makeCanvas(this.rect);
-		this.ctx = this.canvas.getContext('2d');
-	}
-
-	clear() {
-		this.ctx.save();
-		this.ctx.setTransform(1, 0, 0, 1, 0, 0);
-		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-		this.ctx.restore();
+		super(rect);
 	}
 
 	draw(colour, width, height) {
@@ -35,177 +31,9 @@ class DotField {
 	}
 
 	clone() {
-		return new DotField(this.rect);
+		return new DotField(this.rect.clone());
 	}
 
 }
 
-class Rect {
-
-	constructor(x, y, width, height) {
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
-	}
-
-	shrink(byW, byH) {
-		this.x += byW * 0.5;
-		this.y += byH * 0.5;
-		this.width -= byW;
-		this.height -= byH;
-	}
-
-	grow(byW, byH) {
-		this.x -= byW * 0.5;
-		this.y -= byH * 0.5;
-		this.width += byW;
-		this.height += byH;
-	}
-
-	clone() {
-		return new Rect(this.x, this.y, this.width, this.height);
-	}
-
-}
-
-class Triangle {
-
-	constructor(ctx, rect, colour) {
-		this.ctx = ctx;
-		this.rect = rect;
-		this.ctx.fillStyle = colour || 'rgb(0, 0, 0)';
-	}
-
-	draw() {
-
-		// to make it equilateral
-		//     c
-		//
-		//  a     b
-
-		let ax = this.rect.x;
-		let ay = this.rect.y + this.rect.width;
-
-		let bx = this.rect.x + this.rect.width;
-		let by = ay;
-
-		let dx = bx - ax;
-		let dy = by - ay;
-
-		let angle = Math.atan2(dy, dx) - Math.PI / 3;
-		let length = Math.sqrt(dx * dx + dy * dy);
-
-		let cx = Math.cos(angle) * length + ax;
-		let cy = Math.sin(angle) * length + ay;
-
-		this.ctx.save();
-		this.ctx.beginPath();
-		this.ctx.moveTo(ax, ay);
-		this.ctx.lineTo(bx, by);
-		this.ctx.lineTo(cx, cy);
-		this.ctx.fill ();
-		this.ctx.closePath();
-		this.ctx.restore();
-
-		return ay - cy;
-
-	}
-
-}
-
-class CircleMask {
-
-	constructor(ctx, rect, colour) {
-		this.ctx = ctx;
-		this.rect = rect.clone();
-		this.colour = colour || 'rgb(255, 255, 255)';
-	}
-
-	draw(offset) {
-		this.ctx.save();
-		this.ctx.fillStyle = this.colour;
-		this.ctx.beginPath();
-		this.ctx.arc(
-			this.rect.x + this.rect.width * 0.5, 
-			this.rect.y + this.rect.height * 0.5, 
-			(this.rect.width - offset) * 0.5, 
-			0, Math.PI * 2, true);
-		this.ctx.rect(this.rect.x, this.rect.y, this.rect.width, this.rect.height)
-		this.ctx.fill();
-		this.ctx.restore();
-	}
-
-}
-
-class Point {
-
-	constructor(x, y) {
-		this.x = x || 0;
-		this.y = y || 0;
-	}
-	
-	translateRadians(angle, distance) {
-		this.x += Math.cos(angle) * distance;
-		this.y += Math.sin(angle) * distance;
-	}
-
-	draw(ctx, colour, radius) {
-		ctx.save();
-		ctx.strokeStyle = colour || 'rgb(255, 0, 0)';
-		radius = radius || 5;
-		ctx.beginPath();
-		ctx.arc(
-			this.x, 
-			this.y, 
-			radius, 0, Math.PI * 2);
-		ctx.stroke();
-		ctx.closePath();
-		ctx.restore();
-	}
-
-	drawNormal(fromPt, ctx, colour, length) {
-		ctx.save();
-		ctx.strokeStyle = colour || 'rgb(255, 0, 0)';
-		ctx.beginPath();
-		ctx.moveTo(this.x, this.y);
-		let pt = this.getNormal(fromPt, length);
-		ctx.lineTo(pt.x, pt.y);
-		ctx.stroke();
-		ctx.closePath();
-		ctx.restore();
-		return pt;
-	}
-
-	getNormal(fromPt, length) {
-		let pt = this.clone();
-		pt.translateRadians(Point.angle(fromPt, pt), length || 20);
-		return pt;
-	}
-	
-	clone() {
-		return new Point(this.x, this.y);
-	}
-
-	static angle(pt0, pt1) {
-		return Math.atan2(pt1.y - pt0.y, pt1.x - pt0.x);
-	}
-
-}
-
-class Utils {
-
-	static makeCanvas(rect) {
-		let c = document.createElement('canvas');
-		c.width = rect.width;
-		c.height = rect.height;
-		return c;
-	}
-
-	static appendDiv(to, id) {
-		let d = to.appendChild(document.createElement('div'));
-		d.id = id;
-		return d;
-	}
-
-}
+export { DotField }

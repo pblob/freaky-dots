@@ -1,9 +1,11 @@
-class PetalField {
+import { Rect, Point } from './geom.js'
+import { Field } from './field.js'
+import { Triangle } from './shapes.js'
+
+class PetalField extends Field {
 
 	constructor(rect) {
-		this.rect = rect.clone();
-		this.canvas = Utils.makeCanvas(this.rect);
-		this.ctx = this.canvas.getContext('2d');
+		super(rect);
 	}
 
 	draw(colour) {
@@ -14,7 +16,7 @@ class PetalField {
 
 		const growth = 20;
 		this.ctx.lineWidth = 5;
-		centrePt.draw(this.ctx, 'rgb(0, 0, 0)', this.rect.width * 0.5);
+		centrePt.draw(this.ctx, colour, this.rect.width * 0.5);
 		this.rect.grow(growth, growth);
 
 		const r = this.rect.width * 0.5;
@@ -41,7 +43,8 @@ class PetalField {
 					petalRect.x - w * 0.5,
 					petalRect.y - w * 0.5,
 					petalRect.width,
-					petalRect.height)
+					petalRect.height),
+					colour
 			);
 			tri.draw();
 			
@@ -55,5 +58,6 @@ class PetalField {
 
 	}
 
-
 }
+
+export { PetalField }

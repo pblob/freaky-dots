@@ -5,110 +5,13 @@
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 		<meta name="author" content="Patrick Toohey">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="styles.css">
 	</head>
-	<style>
-		body {
-			width: 100vw;
-			height: 100vh;
-			margin: 0;
-		}
-		#frame {
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			width: 100vw;
-			height: 100vh;
-		}
-		#matte {
-			
-		}
-		#inner {
-			position: relative;
-			overflow: hidden;
-		}
-		canvas {
-			position: absolute;
-			top: 0px;
-		}
-	</style>
 	<body>
-		<script src="freakydots.js"></script>
 		<script src="tween.js"></script>
-		<script src="petals.js"></script>
-		<script>
-			
-			// What we call chaos is just patterns we haven't recognized. 
-			// What we call random is just patterns we can't decipher. 
-			// What we can't understand we call nonsense. What we can't read we call gibberish.
-			// There is no free will. 
-			// There are no variables.
-			const 
-			freakFactors = {x: 0, y: 0}, // 0 = no offset
-			yourIrrationalFear = 0.66,
-			secondsToTranscendance = 40,
-			scopeOfYourFeeling = 1000,
-			scaleOfYourResponse = 20;
-
-			const 
-			rotate = (field, colour, coords, reverse) => {
-				let rev = reverse ? '-' : '';
-				field.canvas.style.transform = 'translate(' + rev + coords.x + 'px,' + rev + coords.y + 'px) rotate(' + rev + coords.r + 'rad)';
-			},
-			animate = (t) => {
-				TWEEN.update(t);
-				requestAnimationFrame(animate);
-			};
-
-			const coords = {x:0, y: 0, r: 0};
-
-			new TWEEN.Tween(coords)
-				.to({x: freakFactors.x, y: freakFactors.y}, secondsToTranscendance * 1000)
-				.easing(TWEEN.Easing.Sinusoidal.InOut)
-				.repeat(Infinity)
-				.yoyo(true)
-				.start();
-			
-			new TWEEN.Tween(coords)
-				.to({r: '+' + Math.PI * yourIrrationalFear + ''}, secondsToTranscendance * 1100)
-				.onUpdate(() => {
-					rotate(bottomDotsField, 'rgb(0, 0, 0)', coords);
-					rotate(petals, 'rgb(0, 0, 0)', coords);
-				})
-				.repeat(Infinity)
-				.start();
-			
-			const rect = new Rect(0, 0, scopeOfYourFeeling, scopeOfYourFeeling);
-
-			const
-			topDotsField = new DotField(rect),
-			bottomDotsField = topDotsField.clone();
-
-			const 
-			frame = Utils.appendDiv(document.body, 'frame'),
-			matte = Utils.appendDiv(frame, 'matte'),
-			inner = Utils.appendDiv(matte, 'inner');
-			
-			inner.style.width = inner.style.height = scopeOfYourFeeling + 'px';
-
-			const offset = 100;
-			const mask = new CircleMask(topDotsField.ctx, rect);
-			const petals = new PetalField(rect);
-
-			petals.rect.shrink(offset, offset);
-
-			inner.append(bottomDotsField.canvas);
-			inner.append(topDotsField.canvas);
-			inner.append(petals.canvas);
-
-			bottomDotsField.draw('rgb(0, 0, 0)', scaleOfYourResponse);
-			topDotsField.draw('rgb(0, 0, 0)', scaleOfYourResponse);
-			mask.draw(offset);
-
-			
-			petals.draw();
-
-			requestAnimationFrame(animate);
-
+		<script type="module">
+			import { App } from './app.js';
+			new App();
 		</script>
 	</body>
 </html>

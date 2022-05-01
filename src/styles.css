@@ -1,0 +1,37 @@
+body {
+	width: 100vw;
+	height: 100vh;
+	margin: 0;
+}
+#frame {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100vw;
+	height: 100vh;
+}
+#inner {
+	position: relative;
+	overflow: hidden;
+}
+canvas {
+	position: absolute;
+	top: 0px;
+	background: transparent;
+}
+
+#inner.responsive {
+	position: unset;
+	width: 100% !important;
+	height: 100% !important;
+	display: grid;
+	  grid-template-columns: 1fr;
+	  grid-template-rows: 1fr;
+}
+canvas.responsive {
+	position: unset;
+	width: 100%;
+	grid-column-start: 1;
+	grid-column-end: 1;
+	grid-row-start: 1;
+}
