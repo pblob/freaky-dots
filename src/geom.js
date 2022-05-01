@@ -49,7 +49,7 @@ class Point {
 
 	draw(ctx, colour, radius) {
 		ctx.save();
-		ctx.strokeStyle = colour || 'rgb(255, 0, 0)';
+		ctx.strokeStyle = colour || 'rgb(0, 0, 0)';
 		radius = radius || 5;
 		ctx.beginPath();
 		ctx.arc(

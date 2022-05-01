@@ -2,11 +2,12 @@ class Triangle {
 
 	ctx;
 	rect;
+	colour;
 
 	constructor(ctx, rect, colour) {
 		this.ctx = ctx;
 		this.rect = rect;
-		this.ctx.fillStyle = colour || 'rgb(0, 0, 0)';
+		this.colour = colour || 'rgb(0, 0, 0)';
 	}
 
 	draw() {
@@ -32,6 +33,7 @@ class Triangle {
 		let cy = Math.sin(angle) * length + ay;
 
 		this.ctx.save();
+		this.ctx.fillStyle = this.colour;
 		this.ctx.beginPath();
 		this.ctx.moveTo(ax, ay);
 		this.ctx.lineTo(bx, by);
@@ -50,10 +52,11 @@ class CircleMask {
 
 	ctx;
 	rect;
+	colour;
 
 	constructor(ctx, rect, colour) {
 		this.ctx = ctx;
-		this.rect = rect.clone();
+		this.rect = rect;
 		this.colour = colour || 'rgb(255, 255, 255)';
 	}
 

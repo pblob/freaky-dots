@@ -1,8 +1,8 @@
-import { DotField } from './freakydots.js';
-import { PetalField } from './petals.js';
+import { DotField, PetalField } from './field.js';
 import { Rect } from './geom.js'
 import { Utils } from './utils.js'
 import { CircleMask } from './shapes.js'
+import TWEEN from './tween.js'
 
 class App {
 
@@ -13,7 +13,6 @@ class App {
 	// There is no free will. 
 	// There are no variables.
 
-	freakFactors = {x: 0, y: 0}; // 0 = no offset
 	yourIrrationalFear = 0.66;
 	secondsToTranscendance = 40;
 	scopeOfYourFeeling = 1000;
@@ -22,62 +21,60 @@ class App {
 	colour1 = 'rgb(0, 0, 0)';
 	colour2 = 'rgb(255, 255, 255)';
 
+	responsive = true;
+
 	constructor() {
 
-		// Create the freaky things
+		// Create the freaky fields
 
 		const rect = new Rect(0, 0, this.scopeOfYourFeeling, this.scopeOfYourFeeling);
 
-		this.topDotsField = new DotField(rect);
+		this.topDotsField = new DotField(rect.clone());
 		this.bottomDotsField = this.topDotsField.clone();
-
+		this.petalField = new PetalField(rect.clone(), 'rgb(0,0,255)');
+		
 		const offset = 100;
-		const mask = new CircleMask(this.topDotsField.ctx, rect, this.colour2);
-		this.petals = new PetalField(rect, this.colour1);
-
-		this.petals.rect.shrink(offset, offset);
+		this.petalField.rect.shrink(offset, offset);
 
 		this.bottomDotsField.draw(this.colour1, this.scaleOfYourResponse);
 		this.topDotsField.draw(this.colour1, this.scaleOfYourResponse);
-		mask.draw(offset);
-		this.petals.draw(this.colour1);
+		this.petalField.draw(this.colour1);
 
+		const maskCanvas = Utils.makeCanvas(rect.clone());
+		const mask = new CircleMask(maskCanvas.getContext('2d'), rect.clone(), this.colour2);
+		mask.draw(offset);
+		
 		// Append to DOM
 
 		const frame = Utils.appendDiv(document.body, 'frame');
 		const matte = Utils.appendDiv(frame, 'matte');
 		const inner = Utils.appendDiv(matte, 'inner');
-
+		
 		inner.append(this.bottomDotsField.canvas);
 		inner.append(this.topDotsField.canvas);
-		inner.append(this.petals.canvas);
-
+		inner.append(maskCanvas);
+		inner.append(this.petalField.canvas);
+		
 		// Style
 
-		const responsive = false;
-		if (responsive) {
-			// add responsive class list to inner and canvasses
+		document.body.style.backgroundColor = this.colour2;
+		if (this.responsive) {
+			inner.classList.add('responsive');
 		} else {
 			inner.style.width = inner.style.height = this.scopeOfYourFeeling + 'px';
 		}
-		document.body.style.backgroundColor = this.colour2;
-
+		// ensure canvasses are drawn correctly when transformed
+		maskCanvas.style.zIndex = 1;
+		this.petalField.canvas.style.zIndex = 2;
+		
 		// Animate
 
-		const coords = {x:0, y: 0, r: 0};
-
-		new TWEEN.Tween(coords)
-			.to({x: this.freakFactors.x, y: this.freakFactors.y}, this.secondsToTranscendance * 1000)
-			.easing(TWEEN.Easing.Sinusoidal.InOut)
-			.repeat(Infinity)
-			.yoyo(true)
-			.start();
-		
+		const coords = {r: 0};
 		new TWEEN.Tween(coords)
 			.to({r: '+' + Math.PI * this.yourIrrationalFear + ''}, this.secondsToTranscendance * 1100)
 			.onUpdate(() => {
 				this.rotate(this.bottomDotsField, coords);
-				this.rotate(this.petals, coords);
+				this.rotate(this.petalField, coords);
 			})
 			.repeat(Infinity)
 			.start();
@@ -89,7 +86,7 @@ class App {
 	rotate = (field, coords, reverse) => {
 
 		let rev = reverse ? '-' : '';
-		field.canvas.style.transform = 'translate(' + rev + coords.x + 'px,' + rev + coords.y + 'px) rotate(' + rev + coords.r + 'rad)';
+		field.canvas.style.transform = 'rotate(' + rev + coords.r + 'rad)';
 
 	}
 
